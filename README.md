@@ -74,6 +74,44 @@ $ ./simple_camera
 ```
 This program is a simple outline, and does not handle needed error checking well. For better C++ code, use https://github.com/dusty-nv/jetson-utils
 
+## Building C++ Examples
+
+### simple_camera.cpp
+The C++ example can be built in two ways:
+
+1. Using g++ directly:
+```bash
+g++ -std=c++11 simple_camera.cpp -o simple_camera \
+    `pkg-config --cflags --libs opencv4` \
+    -I/usr/include/opencv4
+```
+
+2. Using CMake (recommended):
+Create a CMakeLists.txt:
+```cmake
+cmake_minimum_required(VERSION 3.10)
+project(simple_camera)
+
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+add_executable(simple_camera simple_camera.cpp)
+target_link_libraries(simple_camera ${OpenCV_LIBS})
+```
+
+Then build:
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+Run the program:
+```bash
+./simple_camera
+```
+
 <h2>Notes</h2>
 
 <h3>Camera Image Formats</h3>
