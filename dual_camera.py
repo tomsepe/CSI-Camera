@@ -4,7 +4,7 @@
 # A simple code snippet
 # Using two  CSI cameras (such as the Raspberry Pi Version 2) connected to a
 # NVIDIA Jetson Nano Developer Kit with two CSI ports (Jetson Nano, Jetson Xavier NX) via OpenCV
-# Drivers for the camera and OpenCV are included in the base image in JetPack 4.3+
+# Drivers for the camera and OpenCV are included in the base image in JetPack 4.6.1
 
 # This script will open a window and place the camera stream from each camera in a window
 # arranged horizontally.
@@ -14,6 +14,7 @@
 import cv2
 import threading
 import numpy as np
+from simple_camera import gstreamer_pipeline
 
 
 class CSI_Camera:
@@ -51,7 +52,7 @@ class CSI_Camera:
         # create a thread to read the camera image
         if self.video_capture != None:
             self.running = True
-            self.read_thread = threading.Thread(target=self.updateCamera)
+            self.read_thread = threading.Thread(target=self._update_camera)
             self.read_thread.start()
         return self
 
@@ -61,7 +62,7 @@ class CSI_Camera:
         self.read_thread.join()
         self.read_thread = None
 
-    def updateCamera(self):
+    def _update_camera(self):
         # This is the thread to read images from the camera
         while self.running:
             try:
