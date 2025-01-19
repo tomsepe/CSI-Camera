@@ -4,7 +4,7 @@
 
 # https://docs.opencv.org/3.3.1/d7/d8b/tutorial_py_face_detection.html
 # On the Jetson Nano, OpenCV comes preinstalled
-# Data files are in /usr/sharc/OpenCV
+# Data files are in /usr/share/opencv4
 
 import cv2
 
@@ -20,7 +20,7 @@ def gstreamer_pipeline(
     display_width=960,
     display_height=540,
     framerate=30,
-    flip_method=0,
+    flip_method=2,
 ):
     return (
         "nvarguscamerasrc ! "
