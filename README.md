@@ -71,6 +71,19 @@ Face detection implementation using OpenCV's Haar Cascade classifier. Features:
 python3 face_detect.py
 ```
 
+### face_tracker.py
+Enhanced version of face_detect.py with performance optimizations:
+- Frame skipping for improved performance
+- Optimized face detection parameters
+- Face position tracking between frames
+- Display of face center coordinates
+- Memory usage optimizations
+- More efficient frame processing pipeline
+
+```bash
+python3 face_tracker.py
+```
+
 ### dual_camera.py
 For Jetson boards with two CSI-MIPI camera ports. Features:
 - Reads from both CSI cameras simultaneously
@@ -140,11 +153,13 @@ make
 
 Approximate FPS on Jetson Nano (may vary based on conditions):
 - face_detect.py: 15-20 FPS
+- face_tracker.py: 25-30 FPS
 - face_tracker_zoom.py: 12-15 FPS
 - face_tracker_gpu.py: 20-25 FPS
 
 Additional performance considerations:
-- face_tracker.py: Basic implementation, suitable for most uses
+- face_detect.py: Basic implementation, suitable for testing
+- face_tracker.py: Optimized implementation, best CPU-only performance
 - face_tracker_zoom.py: Slightly more CPU intensive due to zoom calculations
 - face_tracker_gpu.py: Best performance, requires OpenCV built with CUDA support
 
