@@ -1,5 +1,6 @@
 # CSI-Camera
 Simple example of using a MIPI-CSI(2) Camera (like the Raspberry Pi Version 2 camera) with the NVIDIA Jetson Developer Kits with CSI camera ports. This includes the recent Jetson Nano and Jetson Xavier NX. This is support code for the article on JetsonHacks: https://wp.me/p7ZgI9-19v
+This Branch is specifically working with the standard Jetson Nano SD card image from NVIDIA which includes Ubuntu 18.04
 
 ## Quick Start
 1. Connect your CSI camera
@@ -99,11 +100,9 @@ GPU-accelerated version:
 - Asynchronous operations
 - Improved performance over CPU version
 
-#### face_tracker_gpu_tensor.py
-TensorRT-optimized version:
-- TensorRT-accelerated face detection
-- Highest performance of all versions
-- Real-time inference optimization
+```bash
+python3 face_tracker_gpu.py
+```
 
 ## Building C++ Examples
 
@@ -143,7 +142,32 @@ Approximate FPS on Jetson Nano (may vary based on conditions):
 - face_detect.py: 15-20 FPS
 - face_tracker_zoom.py: 12-15 FPS
 - face_tracker_gpu.py: 20-25 FPS
-- face_tracker_gpu_tensor.py: 30-35 FPS
+
+Additional performance considerations:
+- face_tracker.py: Basic implementation, suitable for most uses
+- face_tracker_zoom.py: Slightly more CPU intensive due to zoom calculations
+- face_tracker_gpu.py: Best performance, requires OpenCV built with CUDA support
+
+## Future Improvements
+
+1. TensorRT Integration:
+   - Replace Haar Cascade with TensorRT-optimized neural network
+   - Implement face landmark detection
+   - Add face recognition capabilities
+
+2. Additional Features:
+   - Multi-face tracking
+   - Face recognition
+   - Gesture recognition
+   - Expression detection
+
+## Troubleshooting
+
+If you encounter issues:
+1. Verify camera connection
+2. Check OpenCV CUDA support: `python3 -c "import cv2; print(cv2.cuda.getCudaEnabledDeviceCount())"`
+3. Monitor system temperature: `tegrastats`
+4. Ensure adequate power supply (5V/4A recommended)
 
 ## Camera Image Formats
 You can use v4l2-ctl to determine the camera capabilities:
@@ -167,18 +191,6 @@ flip-method         : video flip methods
                            (6): vertical-flip    - Flip vertically
                            (7): upper-left-diagonal - Flip across upper left/low
 ```
-
-## Troubleshooting
-
-If you encounter issues:
-1. Verify camera connection
-2. Check OpenCV CUDA support: `python3 -c "import cv2; print(cv2.cuda.getCudaEnabledDeviceCount())"`
-3. Monitor system temperature: `tegrastats`
-4. Ensure adequate power supply (5V/4A recommended)
-
-For TensorRT issues:
-1. Verify TensorRT installation
-2. Monitor GPU memory: `
 
 ## GPU Acceleration Setup
 
@@ -293,28 +305,3 @@ After successful installation, you should be able to run the GPU-accelerated fac
 ```bash
 python3 face_tracker_gpu.py
 ```
-
-## Edge TPU Setup
-
-To use the Coral USB Edge TPU accelerator:
-
-1. Install Edge TPU runtime and libraries:
-```bash
-echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-sudo apt-get update
-sudo apt-get install -y python3-pycoral
-```
-
-2. Download required models:
-```bash
-chmod +x setup_models.sh
-./setup_models.sh
-```
-
-3. Run the Edge TPU version:
-```bash
-python3 face_tracker_tpu.py
-```
-
-Note: Make sure your Coral USB Accelerator is connected before running the program.
