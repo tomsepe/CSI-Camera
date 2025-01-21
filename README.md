@@ -179,3 +179,117 @@ If you encounter issues:
 For TensorRT issues:
 1. Verify TensorRT installation
 2. Monitor GPU memory: `
+
+## GPU Acceleration Setup
+
+For GPU-accelerated face detection (required for face_tracker_gpu.py):
+
+1. First verify if OpenCV has CUDA support:
+```bash
+python3 -c "import cv2; print('CUDA enabled:', cv2.cuda.getCudaEnabledDeviceCount() > 0)"
+```
+
+If the output shows CUDA is not enabled, you'll need to build OpenCV with CUDA support:
+
+1. Install dependencies:
+```bash
+sudo apt-get update
+sudo apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    gfortran \
+    libatlas-base-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libavresample-dev \
+    libcanberra-gtk3-module \
+    libdc1394-22-dev \
+    libeigen3-dev \
+    libglew-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer1.0-dev \
+    libgtk-3-dev \
+    libjpeg-dev \
+    libjpeg8-dev \
+    libjpeg-turbo8-dev \
+    liblapack-dev \
+    liblapacke-dev \
+    libopenblas-dev \
+    libpng-dev \
+    libpostproc-dev \
+    libswscale-dev \
+    libtbb-dev \
+    libtbb2 \
+    libtiff-dev \
+    libv4l-dev \
+    libxine2-dev \
+    libxvidcore-dev \
+    pkg-config \
+    python3-dev \
+    python3-numpy
+```
+
+2. Clone and build OpenCV with CUDA support:
+```bash
+# Clone OpenCV and OpenCV contrib
+cd ~
+git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+cd opencv
+git checkout 4.4.0
+cd ../opencv_contrib
+git checkout 4.4.0
+cd ../opencv
+
+# Create build directory
+mkdir build
+cd build
+
+# Configure build with CUDA support
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+    -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+    -D WITH_OPENCL=OFF \
+    -D WITH_CUDA=ON \
+    -D CUDA_ARCH_BIN=5.3 \
+    -D CUDA_ARCH_PTX="" \
+    -D WITH_CUDNN=ON \
+    -D WITH_CUBLAS=ON \
+    -D ENABLE_FAST_MATH=ON \
+    -D CUDA_FAST_MATH=ON \
+    -D OPENCV_DNN_CUDA=ON \
+    -D ENABLE_NEON=ON \
+    -D WITH_QT=OFF \
+    -D WITH_OPENMP=ON \
+    -D BUILD_TIFF=ON \
+    -D WITH_FFMPEG=ON \
+    -D WITH_GSTREAMER=ON \
+    -D WITH_TBB=ON \
+    -D BUILD_TBB=ON \
+    -D BUILD_TESTS=OFF \
+    -D WITH_EIGEN=ON \
+    -D WITH_V4L=ON \
+    -D WITH_LIBV4L=ON \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D INSTALL_PYTHON_EXAMPLES=OFF \
+    -D BUILD_NEW_PYTHON_SUPPORT=ON \
+    -D BUILD_opencv_python3=ON \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D BUILD_EXAMPLES=OFF ..
+
+# Build and install (this will take a while)
+make -j4
+sudo make install
+sudo ldconfig
+
+# Verify installation
+python3 -c "import cv2; print('CUDA enabled:', cv2.cuda.getCudaEnabledDeviceCount() > 0)"
+```
+
+After successful installation, you should be able to run the GPU-accelerated face detection:
+```bash
+python3 face_tracker_gpu.py
+```
