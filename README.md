@@ -1,6 +1,23 @@
 # CSI-Camera
 Simple example of using a MIPI-CSI(2) Camera (like the Raspberry Pi Version 2 camera) with the NVIDIA Jetson Developer Kits with CSI camera ports. This includes the recent Jetson Nano and Jetson Xavier NX. This is support code for the article on JetsonHacks: https://wp.me/p7ZgI9-19v
 
+## Quick Start
+1. Connect your CSI camera
+2. Test basic functionality:
+```bash
+gst-launch-1.0 nvarguscamerasrc ! nvoverlaysink
+```
+3. Run simple camera example:
+```bash
+python3 simple_camera.py
+```
+4. Try face detection:
+```bash
+python3 face_detect.py
+```
+
+For GPU-accelerated versions, see TensorRT Setup below.
+
 ## Camera Setup
 For the Nanos and Xavier NX, the camera should be installed in the MIPI-CSI Camera Connector on the carrier board. The pins on the camera ribbon should face the Jetson module, the tape stripe faces outward.
 
@@ -23,7 +40,18 @@ gst-launch-1.0 nvarguscamerasrc sensor_id=0 ! nvoverlaysink
 
 # More specific - width, height and framerate are from supported video modes
 gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM),width=1280,height=720,framerate=30/1, format=NV12' ! nvvidconv flip-method=0 ! 'video/x-raw,width=1280,height=720' ! nvvidconv ! nvegltransform ! nveglglessink -e
+
+# Fullscreen without window decorations
+gst-launch-1.0 nvarguscamerasrc ! \
+    'video/x-raw(memory:NVMM), width=1024, height=600, framerate=30/1, format=NV12' ! \
+    nvvidconv flip-method=2 ! \
+    'video/x-raw, width=1024, height=600' ! \
+    nvvidconv ! \
+    nvegltransform ! \
+    nveglglessink fullscreen=true window-width=1024 window-height=600 sync=false -e
 ```
+
+The `fullscreen=true` parameter in nveglglessink forces true fullscreen mode. Add `sync=false` for potentially better performance.
 
 ## Programs
 
