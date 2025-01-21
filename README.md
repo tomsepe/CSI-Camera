@@ -1,6 +1,12 @@
 # CSI-Camera
 Simple example of using a MIPI-CSI(2) Camera (like the Raspberry Pi Version 2 camera) with the NVIDIA Jetson Developer Kits with CSI camera ports. This includes the recent Jetson Nano and Jetson Xavier NX. This is support code for the article on JetsonHacks: https://wp.me/p7ZgI9-19v
 
+This branch is specifically for Ubuntu 20.04 with pre-installed:
+- OpenCV 4.8.0 with CUDA support
+- TensorFlow
+- PyTorch 1.13.0
+- TensorRT 8.0.1.6
+
 ## Quick Start
 1. Connect your CSI camera
 2. Test basic functionality:
@@ -14,6 +20,14 @@ python3 simple_camera.py
 4. Try face detection:
 ```bash
 python3 face_detect.py
+```
+5. For GPU-accelerated detection:
+```bash
+python3 face_tracker_gpu.py
+```
+6. For Edge TPU acceleration (requires Coral USB):
+```bash
+python3 face_tracker_tpu.py
 ```
 
 For GPU-accelerated versions, see TensorRT Setup below.
