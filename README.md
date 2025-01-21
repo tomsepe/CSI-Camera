@@ -48,7 +48,7 @@ gst-launch-1.0 nvarguscamerasrc ! \
     'video/x-raw, width=1024, height=600' ! \
     nvvidconv ! \
     nvegltransform ! \
-    nveglglessink fullscreen=true window-width=1024 window-height=600 sync=false -e
+    nveglglessink window-x=0 window-y=0 window-width=1024 window-height=600 -e
 ```
 
 The `fullscreen=true` parameter in nveglglessink forces true fullscreen mode. Add `sync=false` for potentially better performance.
@@ -180,48 +180,4 @@ If you encounter issues:
 
 For TensorRT issues:
 1. Verify TensorRT installation
-2. Monitor GPU memory: `watch -n 0.5 nvidia-smi`
-
-## Release Notes
-
-v3.3 Release January, 2025
-* Added advanced face detection implementations
-* TensorRT optimization support
-* Improved documentation and examples
-* Performance optimizations
-
-v3.2 Release January, 2022
-* Add Exception handling to Python code
-* Faster GStreamer pipelines, better performance
-* Better naming of variables, simplification
-* Remove Instrumented examples
-* L4T 32.6.1 (JetPack 4.5)
-* OpenCV 4.4.1
-* Python3
-* Tested on Jetson Nano B01, Jetson Xavier NX
-* Tested with Raspberry Pi V2 cameras
-
-v3.11 Release April, 2020
-* Release both cameras in dual camera example (bug-fix)
-
-v3.1 Release March, 2020
-* L4T 32.3.1 (JetPack 4.3)
-* OpenCV 4.1.1
-* Tested on Jetson Nano B01
-* Tested with Raspberry Pi v2 cameras
-
-v3.0 December 2019
-* L4T 32.3.1
-* OpenCV 4.1.1.
-* Tested with Raspberry Pi v2 camera
-
-v2.0 Release September, 2019
-* L4T 32.2.1 (JetPack 4.2.2)
-* OpenCV 3.3.1
-* Tested on Jetson Nano
-
-Initial Release (v1.0) March, 2019
-* L4T 32.1.0 (JetPack 4.2)
-* Tested on Jetson Nano
-
-
+2. Monitor GPU memory: `
