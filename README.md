@@ -39,7 +39,7 @@ Some Jetson developer kits have two CSI camera slots. You can use the sensor_mod
 gst-launch-1.0 nvarguscamerasrc sensor_id=0 ! nvoverlaysink
 
 # More specific - width, height and framerate are from supported video modes
-gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM),width=1280,height=720,framerate=30/1, format=NV12' ! nvvidconv flip-method=0 ! 'video/x-raw,width=1280,height=720' ! nvvidconv ! nvegltransform ! nveglglessink -e
+gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=1024, height=600, framerate=30/1, format=NV12' ! nvvidconv flip-method=0 ! 'video/x-raw,width=1024,height=600' ! nvvidconv ! nvegltransform ! nveglglessink -e
 
 # Fullscreen without window decorations
 gst-launch-1.0 nvarguscamerasrc ! \
@@ -50,8 +50,6 @@ gst-launch-1.0 nvarguscamerasrc ! \
     nvegltransform ! \
     nveglglessink window-x=0 window-y=0 window-width=1024 window-height=600 -e
 ```
-
-The `fullscreen=true` parameter in nveglglessink forces true fullscreen mode. Add `sync=false` for potentially better performance.
 
 ## Programs
 
