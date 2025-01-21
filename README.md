@@ -293,3 +293,28 @@ After successful installation, you should be able to run the GPU-accelerated fac
 ```bash
 python3 face_tracker_gpu.py
 ```
+
+## Edge TPU Setup
+
+To use the Coral USB Edge TPU accelerator:
+
+1. Install Edge TPU runtime and libraries:
+```bash
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install -y python3-pycoral
+```
+
+2. Download required models:
+```bash
+chmod +x setup_models.sh
+./setup_models.sh
+```
+
+3. Run the Edge TPU version:
+```bash
+python3 face_tracker_tpu.py
+```
+
+Note: Make sure your Coral USB Accelerator is connected before running the program.
