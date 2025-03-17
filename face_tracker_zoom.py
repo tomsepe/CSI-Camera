@@ -33,8 +33,9 @@ def face_tracker_zoom():
             capture_height=720,
             display_width=1280,
             display_height=720,
-            framerate=30,
-            flip_method=0
+            framerate=60,
+            flip_method=2,
+            sensor_mode=4
         ),
         cv2.CAP_GSTREAMER
     )
@@ -63,6 +64,12 @@ def face_tracker_zoom():
                 if not ret_val:
                     break
                 
+                # Debug information
+                if frame_count == 0:  # Print only once
+                    print(f"Frame shape: {frame.shape}")
+                    print(f"Frame dtype: {frame.dtype}")
+                    print(f"Number of channels: {1 if len(frame.shape) == 2 else frame.shape[2]}")
+                
                 original_frame = frame.copy()
                 frame_height, frame_width = frame.shape[:2]
                 
@@ -70,7 +77,12 @@ def face_tracker_zoom():
                 if process_this_frame:
                     # Resize frame for faster face detection
                     small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-                    gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                    
+                    # Check number of channels and convert to grayscale only if needed
+                    if len(small_frame.shape) == 3:  # Color image (3 channels)
+                        gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                    else:  # Already grayscale
+                        gray = small_frame
                     
                     # Detect faces
                     faces = face_cascade.detectMultiScale(
