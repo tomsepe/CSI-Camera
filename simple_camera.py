@@ -22,9 +22,10 @@ def gstreamer_pipeline(
     display_height=1080,
     framerate=30,
     flip_method=0,
+    sensor_mode=4,
 ):
     return (
-        "nvarguscamerasrc sensor-id=%d ! "
+        "nvarguscamerasrc sensor-id=%d sensor-mode=%d ! "
         "video/x-raw(memory:NVMM), width=(int)%d, height=(int)%d, framerate=(fraction)%d/1 ! "
         "nvvidconv flip-method=%d ! "
         "video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
@@ -32,6 +33,7 @@ def gstreamer_pipeline(
         "video/x-raw, format=(string)BGR ! appsink"
         % (
             sensor_id,
+            sensor_mode,
             capture_width,
             capture_height,
             framerate,
