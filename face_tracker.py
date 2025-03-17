@@ -33,8 +33,9 @@ def face_tracker():
             capture_height=720,
             display_width=1280,
             display_height=720,
-            framerate=30,
-            flip_method=0
+            framerate=60,
+            flip_method=2,
+            sensor_mode=4
         ),
         cv2.CAP_GSTREAMER
     )
@@ -46,7 +47,7 @@ def face_tracker():
             # Variables for FPS calculation
             frame_count = 0
             fps = 0
-            fps_update_interval = 1.0  # Update FPS every second
+            fps_update_interval = 1.0
             last_fps_update = time.time()
             
             # Variables for face detection optimization
@@ -60,13 +61,22 @@ def face_tracker():
                 if not ret_val:
                     break
                 
+                # Debug information
+                if frame_count == 0:  # Print only once
+                    print(f"Frame shape: {frame.shape}")
+                    print(f"Frame dtype: {frame.dtype}")
+                    print(f"Number of channels: {1 if len(frame.shape) == 2 else frame.shape[2]}")
+                
                 # Only process every other frame
                 if process_this_frame:
                     # Resize frame for faster face detection
                     small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
                     
-                    # Convert to grayscale for face detection
-                    gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                    # Check number of channels and convert to grayscale only if needed
+                    if len(small_frame.shape) == 3:  # Color image (3 channels)
+                        gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                    else:  # Already grayscale
+                        gray = small_frame
                     
                     # Detect faces with adjusted parameters
                     faces = face_cascade.detectMultiScale(
