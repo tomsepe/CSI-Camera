@@ -54,10 +54,11 @@ def face_tracker_zoom():
             process_this_frame = True
             current_zoom = 1.0
             target_zoom = 1.0
-            zoom_speed = 0.1  # Smoothing factor for zoom transitions
+            zoom_speed = 0.05  # Reduced from 0.1 for smoother transitions
             last_face_time = 0
-            face_timeout = 8.0  # Maximum time to stay zoomed on a face
-            min_face_size = 100  # Minimum face size to trigger zoom
+            face_timeout = 2.0  # Reduced from 8.0 for faster return to normal view
+            min_face_size = 60  # Reduced from 100 for earlier zoom triggering
+            max_zoom = 1.8  # Reduced from 2.5 to prevent extreme zooming
             
             while True:
                 ret_val, frame = video_capture.read()
@@ -110,16 +111,18 @@ def face_tracker_zoom():
                         x, y, w, h = largest_face
                         # Calculate zoom based on face size
                         face_zoom = min(frame_width / (w * 2), frame_height / (h * 2))
-                        target_zoom = min(face_zoom, 2.5)  # Limit maximum zoom
+                        target_zoom = min(face_zoom, max_zoom)  # Using new max_zoom limit
                         last_face_time = current_time
                     elif current_time - last_face_time > face_timeout:
                         target_zoom = 1.0
                     
-                    # Smooth zoom transition
-                    current_zoom += (target_zoom - current_zoom) * zoom_speed
+                    # Smooth zoom transition with minimum change threshold
+                    zoom_diff = target_zoom - current_zoom
+                    if abs(zoom_diff) > 0.01:  # Only change zoom if difference is significant
+                        current_zoom += zoom_diff * zoom_speed
                     
-                    # Apply zoom
-                    if current_zoom > 1.01:  # Only zoom if significantly > 1
+                    # Apply zoom with boundary check
+                    if current_zoom > 1.05:  # Slightly higher threshold to prevent minor zooms
                         # Calculate zoom center (center of largest face or frame center)
                         if largest_face:
                             x, y, w, h = largest_face
