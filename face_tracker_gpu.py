@@ -33,8 +33,9 @@ def face_tracker():
             capture_height=720,
             display_width=1280,
             display_height=720,
-            framerate=30,
-            flip_method=0
+            framerate=60,
+            flip_method=2,
+            sensor_mode=4
         ),
         cv2.CAP_GSTREAMER
     )
