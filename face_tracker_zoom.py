@@ -54,11 +54,16 @@ def face_tracker_zoom():
             process_this_frame = True
             current_zoom = 1.0
             target_zoom = 1.0
-            zoom_speed = 0.05  # Reduced from 0.1 for smoother transitions
+            zoom_speed = 0.03  # Even slower transitions
             last_face_time = 0
-            face_timeout = 2.0  # Reduced from 8.0 for faster return to normal view
-            min_face_size = 60  # Reduced from 100 for earlier zoom triggering
-            max_zoom = 1.8  # Reduced from 2.5 to prevent extreme zooming
+            face_timeout = 1.0  # Shorter timeout
+            min_face_size = 60
+            max_zoom = 1.5
+            
+            # Add smoothing for face position
+            smooth_center_x = None
+            smooth_center_y = None
+            position_smooth = 0.7  # Higher = more position smoothing
             
             while True:
                 ret_val, frame = video_capture.read()
@@ -109,36 +114,49 @@ def face_tracker_zoom():
                     # Handle zooming
                     if largest_face and (largest_face[2] > min_face_size):
                         x, y, w, h = largest_face
+                        
+                        # Calculate face center
+                        face_center_x = x + w // 2
+                        face_center_y = y + h // 2
+                        
+                        # Initialize or update smooth center
+                        if smooth_center_x is None:
+                            smooth_center_x = face_center_x
+                            smooth_center_y = face_center_y
+                        else:
+                            smooth_center_x = int(smooth_center_x * position_smooth + face_center_x * (1 - position_smooth))
+                            smooth_center_y = int(smooth_center_y * position_smooth + face_center_y * (1 - position_smooth))
+                        
                         # Calculate zoom based on face size
                         face_zoom = min(frame_width / (w * 2), frame_height / (h * 2))
-                        target_zoom = min(face_zoom, max_zoom)  # Using new max_zoom limit
+                        target_zoom = min(max(face_zoom, 1.2), max_zoom)  # Minimum zoom of 1.2x
                         last_face_time = current_time
                     elif current_time - last_face_time > face_timeout:
                         target_zoom = 1.0
+                        smooth_center_x = None
+                        smooth_center_y = None
                     
-                    # Smooth zoom transition with minimum change threshold
-                    zoom_diff = target_zoom - current_zoom
-                    if abs(zoom_diff) > 0.01:  # Only change zoom if difference is significant
-                        current_zoom += zoom_diff * zoom_speed
+                    # Smooth zoom transition
+                    current_zoom = current_zoom * position_smooth + target_zoom * (1 - position_smooth)
                     
-                    # Apply zoom with boundary check
-                    if current_zoom > 1.05:  # Slightly higher threshold to prevent minor zooms
-                        # Calculate zoom center (center of largest face or frame center)
-                        if largest_face:
-                            x, y, w, h = largest_face
-                            center_x = x + w // 2
-                            center_y = y + h // 2
-                        else:
-                            center_x = frame_width // 2
-                            center_y = frame_height // 2
-                        
-                        # Calculate zoom region
+                    # Apply zoom only if we have a valid center and zoom
+                    if current_zoom > 1.1 and smooth_center_x is not None:
+                        # Calculate zoom region using smoothed center
                         new_w = int(frame_width / current_zoom)
                         new_h = int(frame_height / current_zoom)
-                        x1 = max(0, center_x - new_w // 2)
-                        y1 = max(0, center_y - new_h // 2)
-                        x2 = min(frame_width, x1 + new_w)
-                        y2 = min(frame_height, y1 + new_h)
+                        
+                        # Calculate boundaries with smoothed center
+                        x1 = max(0, smooth_center_x - new_w // 2)
+                        y1 = max(0, smooth_center_y - new_h // 2)
+                        
+                        # Adjust if too close to edges
+                        if x1 + new_w > frame_width:
+                            x1 = frame_width - new_w
+                        if y1 + new_h > frame_height:
+                            y1 = frame_height - new_h
+                        
+                        x2 = x1 + new_w
+                        y2 = y1 + new_h
                         
                         # Crop and resize
                         frame = original_frame[y1:y2, x1:x2]
