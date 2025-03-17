@@ -60,19 +60,28 @@ def face_tracker():
                 if not ret_val:
                     break
                 
+                # Debug information
+                if frame_count == 0:  # Print only once
+                    print(f"Frame shape: {frame.shape}")
+                    print(f"Frame dtype: {frame.dtype}")
+                    print(f"Number of channels: {1 if len(frame.shape) == 2 else frame.shape[2]}")
+                
                 # Only process every other frame
                 if process_this_frame:
                     # Resize frame for faster face detection
                     small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
                     
-                    # Convert to grayscale for face detection
-                    gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                    # Check number of channels and convert to grayscale only if needed
+                    if len(small_frame.shape) == 3:  # Color image (3 channels)
+                        gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+                    else:  # Already grayscale
+                        gray = small_frame
                     
                     # Detect faces with adjusted parameters
                     faces = face_cascade.detectMultiScale(
                         gray,
-                        scaleFactor=1.2,  # Increased for faster detection
-                        minNeighbors=4,   # Reduced for faster detection
+                        scaleFactor=1.2,
+                        minNeighbors=4,
                         minSize=(30, 30),
                         flags=cv2.CASCADE_SCALE_IMAGE
                     )
