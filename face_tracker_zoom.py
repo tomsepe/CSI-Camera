@@ -33,7 +33,7 @@ def face_tracker_zoom():
             capture_height=720,
             display_width=1280,
             display_height=720,
-            framerate=60,
+            framerate=30,
             flip_method=2,
             sensor_mode=4
         ),
